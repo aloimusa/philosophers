@@ -1,5 +1,6 @@
 # philosophers
 works with tight timings
+
 ![demo](https://i.imgur.com/FNAP1Eq.gif)
 ## what is this
 

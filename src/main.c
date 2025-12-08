@@ -31,8 +31,8 @@ int	main(int ac, char **av)
 	table.start = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 	set_table(av, &table);
 	sit_philos(&table);
-	while (get_bool(&table.mutex[0], &table.alive))
-		observe(&table);
+	while (observe(&table))
+		usleep(420);
 	clean(&table);
 	exit(EXIT_SUCCESS);
 }
@@ -84,6 +84,7 @@ static void	sit_philos(t_table *table)
 		table->philo[i].table = table;
 		table->philo[i].chair = i;
 		table->philo[i].ate_at = ms(table);
+		table->philo[i].thread = 0;
 		if (pthread_create(&table->philo[i].thread, NULL, exist,
 				&table->philo[i]) == -1)
 			exit(clean(table));
@@ -99,7 +100,7 @@ static int	clean(t_table *table)
 		if (table->philo)
 		{
 			i = -1;
-			while (++i < table->chairs && table->philo[i].thread)
+			while (++i < table->chairs && table->philo[i].thread != 0)
 				pthread_join(table->philo[i].thread, NULL);
 			free(table->philo);
 		}

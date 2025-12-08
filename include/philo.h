@@ -68,6 +68,6 @@ void					set_bool(pthread_mutex_t *mutex, bool *val,
 							bool new_val);
 long					ms(t_table *table);
 void					*exist(void *arg);
-void					observe(t_table *table);
+bool					observe(t_table *table);
 
 #endif

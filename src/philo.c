@@ -14,7 +14,7 @@
 
 static short	getfork(bool left, t_table *tbl, int chair);
 
-void	observe(t_table *table)
+bool	observe(t_table *table)
 {
 	int		i;
 	long	now;
@@ -28,7 +28,7 @@ void	observe(t_table *table)
 		{
 			set_bool(&table->mutex[0], &table->alive, false);
 			ft_printf(DEAD, (long long)now, i + 1);
-			return ;
+			return (false);
 		}
 	}
 	if (table->times_must_eat != -1)
@@ -38,7 +38,7 @@ void	observe(t_table *table)
 			set_bool(&table->mutex[0], &table->alive, false);
 		pthread_mutex_unlock(&table->mutex[table->chairs * 2 + 1]);
 	}
-	usleep(420);
+	return (true);
 }
 
 static void	eat(t_philo *me)
@@ -66,7 +66,31 @@ static void	eat(t_philo *me)
 	}
 	pthread_mutex_unlock(&table->mutex[getfork(me->dhand, table, i)]);
 	pthread_mutex_unlock(&table->mutex[getfork(!me->dhand, table, i)]);
-	return ;
+}
+
+static void	think(t_philo *me, bool ate)
+{
+	t_table	*table;
+	int		think;
+
+	table = me->table;
+	ft_printf(THINK, (long long)ms(table), me->chair + 1);
+	if (!ate)
+	{
+		think = ((((bool)me->dhand + 1) * (table->time_to_die
+						- table->time_to_eat - table->time_to_sleep)
+					* me->chair) / table->chairs / 3);
+	}
+	else if ((long long)ms(table) - get_long(&table->mutex[table->chairs + 1
+				+ me->chair], &me->ate_at) > table->time_to_eat * 3 / 2)
+	{
+		think = (1000 * (table->time_to_die - table->time_to_eat * 2
+					- table->time_to_sleep));
+	}
+	else
+		think = 0;
+	if (think > 0)
+		usleep(think);
 }
 
 void	*exist(void *arg)
@@ -78,22 +102,20 @@ void	*exist(void *arg)
 	ate = 0;
 	while (get_bool(&me->table->mutex[0], &me->table->alive))
 	{
-		ft_printf(THINK, (long long)ms(me->table), me->chair + 1);
-		if (!ate)
-			usleep((42 * me->dhand * me->table->time_to_eat * me->chair)
-				/ me->table->chairs);
-		eat(me);
-		if (!get_bool(&me->table->mutex[0], &me->table->alive)
-			|| ++ate >= (unsigned int)me->table->times_must_eat)
+		think(me, (bool)ate);
+		if (!get_bool(&me->table->mutex[0], &me->table->alive))
 			break ;
+		eat(me);
+		if (!get_bool(&me->table->mutex[0], &me->table->alive))
+			break ;
+		if (++ate == (unsigned int)me->table->times_must_eat)
+		{
+			pthread_mutex_lock(&me->table->mutex[me->table->chairs * 2 + 1]);
+			me->table->finished++;
+			pthread_mutex_unlock(&me->table->mutex[me->table->chairs * 2 + 1]);
+		}
 		ft_printf(SLEEP, (long long)ms(me->table), me->chair + 1);
 		usleep(me->table->time_to_sleep * 1000);
-	}
-	if (ate >= (unsigned int)me->table->times_must_eat)
-	{
-		pthread_mutex_lock(&me->table->mutex[me->table->chairs * 2 + 1]);
-		me->table->finished++;
-		pthread_mutex_unlock(&me->table->mutex[me->table->chairs * 2 + 1]);
 	}
 	return (NULL);
 }

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aloimusa <aloimusa@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/26 17:54:10 by aloimusa          #+#    #+#             */
-/*   Updated: 2025/10/26 17:54:31 by aloimusa         ###   ########.fr       */
+/*   Created: 2025/12/15 15:29:24 by aloimusa          #+#    #+#             */
+/*   Updated: 2025/12/15 15:29:25 by aloimusa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	main(int ac, char **av)
 
 	if (ac < 5 || ac > 6)
 	{
-		ft_printf(USAGE_MSG);
+		printf(USAGE_MSG);
 		exit(EXIT_SUCCESS);
 	}
 	if (gettimeofday(&tv, NULL) == -1)
@@ -32,7 +32,7 @@ int	main(int ac, char **av)
 	set_table(av, &table);
 	sit_philos(&table);
 	while (observe(&table))
-		usleep(420);
+		usleep(400);
 	clean(&table);
 	exit(EXIT_SUCCESS);
 }
@@ -51,8 +51,8 @@ static void	set_table(char **av, t_table *table)
 		|| !table->time_to_sleep || (av[5] && !table->times_must_eat))
 		exit(EXIT_SUCCESS);
 	if (table->chairs == 1)
-		if (ft_printf(ONE_PHILO) && usleep(table->time_to_die * 1000) == 0)
-			exit(!(bool)(ft_printf(DEAD, table->time_to_die, 1)));
+		if (printf(ONE_PHILO) && usleep(table->time_to_die * 1000) == 0)
+			exit(!(bool)(printf(ONE_PHILO_DEAD, table->time_to_die)));
 	table->fork = malloc(table->chairs * sizeof(bool));
 	if (!table->fork)
 		exit(clean(table));

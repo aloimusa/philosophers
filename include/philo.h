@@ -12,7 +12,8 @@
 
 #ifndef PHILO_H
 # define PHILO_H
-# include "libft.h"
+# include <errno.h>
+# include <limits.h>
 # include <pthread.h>
 # include <stdatomic.h>
 # include <stdbool.h>
@@ -23,16 +24,25 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-# define THINK "%l %d is thinking\n"
-# define SLEEP "%l %d is sleeping\n"
-# define EAT "%l %d is eating\n"
-# define FORK_ONE "%l %d has taken a fork\n"
-# define FORK_TWO "%l %d has taken a fork\n%l %d is eating\n"
+# define THINK "is thinking\n"
+# define SLEEP "is sleeping\n"
+# define EAT "is eating\n"
+# define FORK "has taken a fork\n"
+# define DEAD "died\n"
+
 # define ONE_PHILO "0 1 is thinking\n0 1 has taken a fork\n"
-# define DEAD "%l %d died\n"
+# define ONE_PHILO_DEAD "%d 1 died\n"
 # define USAGE_MSG \
 	"./philo <philos> <die_time> <eat_time> \
 <sleep_time> [times_to_eat]\n"
+
+typedef struct s_fprintf
+{
+	char				buffer[PIPE_BUF];
+	int					fd;
+	size_t				len;
+	ssize_t				ret;
+}						t_fprintf;
 
 typedef struct s_table	t_table;
 
@@ -69,5 +79,8 @@ void					set_bool(pthread_mutex_t *mutex, bool *val,
 long					ms(t_table *table);
 void					*exist(void *arg);
 bool					observe(t_table *table);
+long					printp(const char *msg, const char *msg2, int chair,
+							t_table *table);
+int						ft_atoi(const char *str);
 
 #endif

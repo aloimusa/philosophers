@@ -6,7 +6,7 @@
 /*   By: aloimusa <aloimusa@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:29:24 by aloimusa          #+#    #+#             */
-/*   Updated: 2025/12/15 15:29:25 by aloimusa         ###   ########.fr       */
+/*   Updated: 2025/12/15 19:51:29 by aloimusa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ static void	set_table(char **av, t_table *table)
 	else
 		table->times_must_eat = -1;
 	if (!table->chairs || !table->time_to_die || !table->time_to_eat
-		|| !table->time_to_sleep || (av[5] && !table->times_must_eat))
+		|| !table->time_to_sleep || (av[5] && !table->times_must_eat)
+		|| table->chairs > 200)
 		exit(EXIT_SUCCESS);
 	if (table->chairs == 1)
 		if (printf(ONE_PHILO) && usleep(table->time_to_die * 1000) == 0)

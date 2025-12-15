@@ -6,7 +6,7 @@
 /*   By: aloimusa <aloimusa@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:29:15 by aloimusa          #+#    #+#             */
-/*   Updated: 2025/12/15 15:29:16 by aloimusa         ###   ########.fr       */
+/*   Updated: 2025/12/15 19:53:06 by aloimusa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,14 +108,14 @@ void	*exist(void *arg)
 		if (!get_bool(&table->mutex[0], &table->alive))
 			break ;
 		eat(me);
-		if (!get_bool(&table->mutex[0], &table->alive))
-			break ;
 		if (++ate == (unsigned int)table->times_must_eat)
 		{
 			pthread_mutex_lock(&table->mutex[table->chairs * 2 + 1].lock);
 			table->finished++;
 			pthread_mutex_unlock(&table->mutex[table->chairs * 2 + 1].lock);
 		}
+		if (!get_bool(&table->mutex[0], &table->alive))
+			break ;
 		printp(SLEEP, NULL, me->chair, table);
 		usleep(table->time_to_sleep * 1000);
 	}

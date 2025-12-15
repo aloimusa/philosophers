@@ -81,9 +81,9 @@ static void	think(t_philo *me, bool ate)
 					* me->chair) / table->chairs / 3);
 	}
 	else if ((long long)ms(table) - get_long(&table->mutex[table->chairs + 1
-				+ me->chair], &me->ate_at) > table->time_to_eat * 9 / 10)
+				+ me->chair], &me->ate_at) > table->time_to_eat * 4 / 5)
 	{
-		think = (1000 * (table->time_to_die - table->time_to_eat * 2
+		think = (900 * (table->time_to_die - table->time_to_eat * 2
 					- table->time_to_sleep));
 	}
 	else

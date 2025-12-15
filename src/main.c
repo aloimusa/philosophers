@@ -54,16 +54,13 @@ static void	set_table(char **av, t_table *table)
 		if (printf(ONE_PHILO) && usleep(table->time_to_die * 1000) == 0)
 			exit(!(bool)(printf(ONE_PHILO_DEAD, table->time_to_die)));
 	table->fork = malloc(table->chairs * sizeof(bool));
-	if (!table->fork)
-		exit(clean(table));
-	table->mutex = malloc((table->chairs * 2 + 2) * sizeof(pthread_mutex_t));
-	if (!table->mutex)
-		exit(clean(table));
 	table->philo = malloc(table->chairs * sizeof(t_philo));
-	if (!table->philo)
+	table->thread = ft_calloc(table->chairs, sizeof(pthread_t));
+	table->mutex = ft_calloc(table->chairs * 2 + 2, sizeof(t_mutex));
+	if (!table->fork || !table->philo || !table->thread || !table->mutex)
 		exit(clean(table));
-	table->alive = true;
 	table->finished = 0;
+	table->alive = true;
 }
 
 static void	sit_philos(t_table *table)
@@ -71,12 +68,15 @@ static void	sit_philos(t_table *table)
 	int	i;
 
 	i = -1;
-	while (++i < table->chairs)
-		table->fork[i] = true;
-	i = -1;
 	while (++i < table->chairs * 2 + 2)
-		if (pthread_mutex_init(&table->mutex[i], NULL) == -1)
+	{
+		if (i < table->chairs)
+			table->fork[i] = true;
+		if (pthread_mutex_init(&table->mutex[i].lock, NULL) == -1)
 			exit(clean(table));
+		else
+			table->mutex[i].exists = true;
+	}
 	i = -1;
 	while (++i < table->chairs)
 	{
@@ -84,8 +84,7 @@ static void	sit_philos(t_table *table)
 		table->philo[i].table = table;
 		table->philo[i].chair = i;
 		table->philo[i].ate_at = ms(table);
-		table->philo[i].thread = 0;
-		if (pthread_create(&table->philo[i].thread, NULL, exist,
+		if (pthread_create(&table->thread[i], NULL, exist,
 				&table->philo[i]) == -1)
 			exit(clean(table));
 	}
@@ -95,25 +94,24 @@ static int	clean(t_table *table)
 {
 	int	i;
 
-	if (table)
+	if (table->thread)
 	{
-		if (table->philo)
-		{
-			i = -1;
-			while (++i < table->chairs && table->philo[i].thread != 0)
-				pthread_join(table->philo[i].thread, NULL);
-			free(table->philo);
-		}
-		if (table->mutex)
-		{
-			i = -1;
-			while (++i < table->chairs * 2 + 2)
-				pthread_mutex_destroy(&table->mutex[i]);
-			free(table->mutex);
-		}
-		if (table->fork)
-			free(table->fork);
+		i = -1;
+		while (++i < table->chairs && table->thread[i] != 0)
+			pthread_join(table->thread[i], NULL);
+		free(table->thread);
 	}
+	if (table->mutex)
+	{
+		i = -1;
+		while (++i < table->chairs * 2 + 2 && table->mutex[i].exists)
+			pthread_mutex_destroy(&table->mutex[i].lock);
+		free(table->mutex);
+	}
+	if (table->fork)
+		free(table->fork);
+	if (table->philo)
+		free(table->philo);
 	return (EXIT_FAILURE);
 }
 

@@ -49,18 +49,24 @@ typedef struct s_table	t_table;
 typedef struct s_philo
 {
 	long				ate_at;
-	pthread_t			thread;
 	t_table				*table;
 	bool				dhand;
 	short				chair;
 }						t_philo;
+
+typedef struct s_mutex
+{
+	pthread_mutex_t		lock;
+	bool				exists;
+}						t_mutex;
 
 typedef struct s_table
 {
 	bool				*fork;
 	bool				alive;
 	short				finished;
-	pthread_mutex_t		*mutex;
+	pthread_t			*thread;
+	t_mutex				*mutex;
 	t_philo				*philo;
 	short				chairs;
 	int					time_to_die;
@@ -70,17 +76,16 @@ typedef struct s_table
 	long				start;
 }						t_table;
 
-long					get_long(pthread_mutex_t *mutex, long *val);
-void					set_long(pthread_mutex_t *mutex, long *val,
-							long new_val);
-bool					get_bool(pthread_mutex_t *mutex, bool *val);
-void					set_bool(pthread_mutex_t *mutex, bool *val,
-							bool new_val);
+long					get_long(t_mutex *mutex, long *val);
+void					set_long(t_mutex *mutex, long *val, long new_val);
+bool					get_bool(t_mutex *mutex, bool *val);
+void					set_bool(t_mutex *mutex, bool *val, bool new_val);
 long					ms(t_table *table);
 void					*exist(void *arg);
 bool					observe(t_table *table);
 long					printp(const char *msg, const char *msg2, int chair,
 							t_table *table);
 int						ft_atoi(const char *str);
+void					*ft_calloc(size_t nmemb, size_t size);
 
 #endif

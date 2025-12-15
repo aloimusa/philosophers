@@ -12,58 +12,36 @@
 
 #include "philo.h"
 
-long	get_long(pthread_mutex_t *mutex, long *val)
+long	get_long(t_mutex *mutex, long *val)
 {
 	long	ret;
 
-	pthread_mutex_lock(mutex);
+	pthread_mutex_lock(&mutex->lock);
 	ret = *val;
-	pthread_mutex_unlock(mutex);
+	pthread_mutex_unlock(&mutex->lock);
 	return (ret);
 }
 
-void	set_long(pthread_mutex_t *mutex, long *val, long new_val)
+void	set_long(t_mutex *mutex, long *val, long new_val)
 {
-	pthread_mutex_lock(mutex);
+	pthread_mutex_lock(&mutex->lock);
 	*val = new_val;
-	pthread_mutex_unlock(mutex);
+	pthread_mutex_unlock(&mutex->lock);
 }
 
-bool	get_bool(pthread_mutex_t *mutex, bool *val)
+bool	get_bool(t_mutex *mutex, bool *val)
 {
 	bool	ret;
 
-	pthread_mutex_lock(mutex);
+	pthread_mutex_lock(&mutex->lock);
 	ret = *val;
-	pthread_mutex_unlock(mutex);
+	pthread_mutex_unlock(&mutex->lock);
 	return (ret);
 }
 
-void	set_bool(pthread_mutex_t *mutex, bool *val, bool new_val)
+void	set_bool(t_mutex *mutex, bool *val, bool new_val)
 {
-	pthread_mutex_lock(mutex);
+	pthread_mutex_lock(&mutex->lock);
 	*val = new_val;
-	pthread_mutex_unlock(mutex);
-}
-
-int	ft_atoi(const char *str)
-{
-	long long	number;
-	short		pm;
-	int			i;
-
-	number = 0;
-	pm = 1;
-	i = 0;
-	while (str[i] == ' ' || (str[i] >= '\t' && str[i] <= '\r'))
-		i++;
-	if (str[i] == '+' || str[i] == '-')
-		if (str[i++] == '-')
-			pm *= -1;
-	while (str[i] >= '0' && str[i] <= '9')
-		number = number * 10 + (str[i++] - '0');
-	if (number > INT_MAX || number < INT_MIN)
-		errno = ERANGE;
-	i = (int)number;
-	return (i *= pm);
+	pthread_mutex_unlock(&mutex->lock);
 }

@@ -1,5 +1,5 @@
 NAME := philo
-SRC := main.c mutex.c philo.c printp.c
+SRC := main.c mutex.c philo.c printp.c ft.c
 SRC_DIR := src
 OBJ = $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
